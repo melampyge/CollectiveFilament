@@ -1,0 +1,162 @@
+#!/usr/local/bin/python2.7
+
+import matplotlib as mpl
+mpl.use('Agg')
+import sys
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+
+try:
+    ifname = sys.argv[1]
+    ccrit = float(sys.argv[2])
+except:
+    print 'Usage: ' + sys.argv[0] + '      infilename       crit'
+    exit()
+
+#####################################################################
+### define / read in some global variables
+gamma = 2.0  # viscosity
+kT = 1.0     # thermal energy
+
+ifile = open('scale_params.data')
+line = ifile.readline()
+line = line.split()
+L = float(line[-1])    # polymer length
+line = ifile.readline()
+line = line.split()
+dt = float(line[-1])     # simulation timestep
+
+#####################################################################
+
+def read_coilicity():
+    """ read in the coilcity"""
+    t = []
+    c = []
+    ifile = open(ifname)
+    ifile.readline()
+    ifile.readline()
+    for line in ifile:
+        line = line.split()
+        t.append(float(line[0]))
+        c.append(float(line[1]))
+    ifile.close()
+    t = np.array(t)
+    c = np.array(c)
+    # transform time and coility units
+    ttrans = gamma*L**3/6./kT
+    t *= dt/ttrans
+    c *= L/2/np.pi
+    return t,c
+
+#####################################################################
+
+def gen_plot(t,c):
+    """ generate a plot of the coilicity"""
+    plt.plot(t,c, ls = '', marker = 'o', markersize = 1, color = 'k')
+    plt.savefig('coilicity.png')
+    plt.close()
+    return
+
+#####################################################################
+
+def gen_hist(c):
+    """ generate a histogram of absolute value of c"""
+    csq = np.fabs(c)
+    plt.hist(csq, bins = np.sqrt(len(c)))
+    plt.savefig('hist_coilicity.png')
+    plt.close()
+
+#####################################################################
+
+def coil_state(t,c):
+    """ compute coiling and uncoiling rates"""
+    # store whether the trajectory is coiled or not
+    n = len(c)
+    coiled = np.zeros((n), dtype = int)
+    uncoiled = np.zeros((n), dtype = int)
+    state = np.zeros((n), dtype = int)
+    # define starting value
+    c0 = c[0]
+    if c0**2 > ccrit**2:
+        state[0] = 1
+    # loop over the entire time series to check for changes in states
+    for i in range(1,n):
+        ci = c[i]
+        cm = c[i-1]
+        # check whether the signal has just passed a boundary
+        if ci*cm < 0:
+            state[i] = 0
+        elif (ci-ccrit)*(cm-ccrit) < 0:
+            state[i] = 1
+        elif (ci+ccrit)*(cm+ccrit) < 0:
+            state[i] = 1
+        else:
+            state[i] = state[i-1]
+
+    #plt.plot(t,c, color = '0.5')
+    #plt.plot(t,state, color = 'r')
+    #plt.show()
+    #plt.close()
+    return state
+
+#####################################################################
+
+def get_lifetime(t,s):
+    """ compute the average lifetime of coiled and uncoiled states"""
+    # arrays to store lifetimes of different states
+    tcoiled = []
+    tuncoiled = []
+    # loop over the array
+    n = len(t)
+    told = 0
+    for i in range(1,n):
+        tnew = t[i]
+        snew = s[i]
+        sold = s[i-1]
+        if (snew-0.5)*(sold-0.5) < 0:
+            dt = tnew - told
+            told = tnew
+            if snew == 1:
+                tuncoiled.append(dt)
+            else:
+                tcoiled.append(dt)
+    # compute averages
+    tcoiled = np.array(tcoiled)
+    tuncoiled = np.array(tuncoiled)
+
+    tc_av = np.average(tcoiled)
+    nc = len(tcoiled)
+    tc_std = np.std(tcoiled)/np.sqrt(nc)
+
+    tuc_av = np.average(tuncoiled)
+    nuc = len(tuncoiled)
+    tuc_std = np.std(tuncoiled)/np.sqrt(nuc)
+    return tc_av, nc, tc_std, tuc_av, nuc, tuc_std
+
+#####################################################################
+
+def main():
+    """ main function"""
+    # read in the coilicity
+    t,c = read_coilicity()
+    # generate a plot of the coilicity
+    gen_plot(t,c)
+    # generate a histogram of the coilicity
+    gen_hist(c)
+    # define whether the simulation is in a coiled state or not
+    state = coil_state(t,c)
+    # compute average lifetime of states
+    tc_av, nc, tc_std, tuc_av, nuc, tuc_std = get_lifetime(t,state)
+    # write t_uc and t_c to file
+    ofile = open('coil_lifetime.data', 'w')
+    ofile.write('Data on coilicity lifetime\n\n')
+    ofile.write('tc_av\tnc\ttc_std\ttuc_av\tnuc\ttuc_std\n')
+    ofile.write(str(tc_av) + '\t' + str(nc) + '\t' + str(tc_std) + '\t' + str(tuc_av) + '\t' + str(nuc) + '\t' + str(tuc_std) + '\n')
+    ofile.close()
+    return
+        
+#####################################################################
+
+if __name__ == '__main__':
+    main()

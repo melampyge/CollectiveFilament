@@ -1,0 +1,5 @@
+# information on options read by the analysis
+fname = out2.char
+hname = out2.header
+npol = 75
+nskip = 500

@@ -1,0 +1,129 @@
+#!/usr/local/bin/python2.7
+
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+
+#####################################################################
+### define / read in some global variables
+gamma = 2.0  # viscosity
+kT = 1.0     # thermal energy
+
+ifile = open('scale_params.data')
+line = ifile.readline()
+line = line.split()
+L = float(line[-1])    # polymer length
+line = ifile.readline()
+line = line.split()
+dt = float(line[-1])     # simulation timestep
+
+#####################################################################
+
+def read_data():
+    """ read in the data"""
+    # basic variables
+    t = [0]
+    MSR = [0]
+    # read in the results
+    ifile = open('e2e_msr.data')
+    ifile.readline()
+    for line in ifile:
+        line = line.split()
+        ti = float(line[0])
+        d = float(line[1])
+        if ti != t[-1]:
+            t.append(ti)
+            MSR.append(d)
+    ifile.close()
+    # check for problems
+    mes_ok = 1
+    if t[-1] == 0:
+        mes_ok = 0
+    # transfrom to arrays
+    t = np.array(t)
+    MSR = np.array(MSR)
+    # scale the results
+    ttrans = gamma*L**3/6./kT
+    t *= dt/ttrans
+    return mes_ok, t, MSR
+
+#####################################################################
+
+def find_dr(t,MSR):
+    """ compute the rotational diffusion coefficient"""
+    # compute log versions of the data
+    tlog = np.log10(t)
+    Mlog = np.log10(MSR)
+    # find the linear regime of the data
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    ax.plot(tlog,Mlog)
+    ax.grid(which = 'major')
+    ax.grid(which = 'minor')
+    plt.ion()
+    plt.show()
+    while True:
+        try:
+            # read in the input and output values
+            inpt = raw_input('lower and upper bounds:  ')
+            inpt = inpt.split()
+            tmin = float(inpt[0])
+            tmax = float(inpt[1])
+            # compute the slope of the selected regime
+            res = stats.linregress(tlog[(tlog >= tmin) & (tlog <= tmax)],Mlog[(tlog >= tmin ) & ( tlog <= tmax) ])
+            lslope = res[0]
+            inpt = raw_input('slope = ' + str(lslope) + '. Accept? (0 / 1):  ')
+            inpt = int(inpt)
+            if inpt == 1:
+                break
+        except:
+            pass
+    plt.close()
+    # perform linear fit
+    res  = stats.linregress(t[(tlog >= tmin) & (tlog <= tmax)],MSR[(tlog >= tmin ) & ( tlog <= tmax) ])
+    slope = res[0]
+    dr = 0.5*slope
+    # create a plot to test
+    plt.ioff()
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    ax.plot(t, MSR)
+    ax.plot(t,2*dr*t)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plt.show()
+    plt.close()
+    return dr, lslope
+
+#####################################################################
+
+def  write_results(t,MSR,dr,mes_ok,lslope):
+     ofile = open('msr_analyse_results.data', 'w')
+     ofile.write('Results from analyzing the MSR\n\n')
+     ofile.write('dr = ' + str(dr) + '\n')
+     ofile.write('mes_ok = ' + str(mes_ok) + '\n')
+     ofile.write('lslope = ' + str(lslope) + '\n')
+     ofile.write('\n')
+     ofile.write('t\tMSR\n')
+     for i in range(len(t)):
+         ofile.write(str(t[i]) + '\t' + str(MSR[i]) + '\n')
+     ofile.close()
+     return
+#####################################################################
+
+def main():
+    """ main function"""
+    # read in the MSD data
+    mes_ok, t, MSR = read_data()
+    # fit curves
+    dr, lslope = find_dr(t,MSR)
+    # write results to file
+    write_results(t,MSR,dr,mes_ok,lslope)
+    return
+
+#####################################################################
+
+if __name__ == '__main__':
+    main()

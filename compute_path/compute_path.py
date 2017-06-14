@@ -1,0 +1,58 @@
+#!/usr/local/bin/python2.7
+### read in the center of mass positions
+### compute the center of mass velocity (by direction and absolute quantities)
+
+
+import numpy as np
+import sys, os, math
+import matplotlib.pyplot as plt
+
+try:
+    fname = sys.argv[1]
+except:
+    print 'Usage: ' + sys.argv[0] + '       filename'
+    exit()
+
+
+
+############################################################################
+
+def read_data():
+    """ read in the positions of the COM"""
+    x = []
+    y = []
+    z = []
+    ifile = open(fname, 'r')
+    ifile.readline()
+    ifile.readline()
+    for line in ifile:
+        line = line.split()
+        x.append(float(line[1]))
+        y.append(float(line[2]))
+        z.append(float(line[3]))
+    ifile.close()
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+    return x,y,z
+
+
+
+############################################################################
+
+def main():
+    """ main function, called when the scrit is started"""
+    # read in the center of mass positions
+    print '  reading the data ...'
+    x,y,z = read_data()
+    n = len(x)
+    # compute instantaneous velocities
+    plt.plot(x,y, ls = '', marker = 'o')
+    plt.show()
+    plt.close()
+    return
+
+############################################################################
+
+if __name__ == '__main__':
+    main()

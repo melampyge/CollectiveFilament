@@ -1,0 +1,8 @@
+# parameter for the computation of the mean square displacement
+fname = out.char
+hname = out.header
+npol = 75
+nskip = 500
+nmsr = 50
+limit = 0.5
+nevery = 1

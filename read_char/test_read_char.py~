@@ -1,0 +1,46 @@
+#!/usr/local/bin/python2.7
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import math
+import codecs
+import read_char
+
+try:
+    fname = sys.argv[1]
+    hname = sys.argv[2]
+except:
+    print 'Usage: ' + sys.argv[0] + '      char file        header file'
+    exit()
+    
+##################################################################
+
+
+##################################################################
+
+def main():
+    """ test the functions in read_char"""
+    ### open input files for reading
+    ifile = codecs.open(fname, 'r', 'UTF-8')
+    hfile = open(hname, 'r')
+    ### print information from the first line
+    natoms, nsteps = read_char.read_first(hfile)
+    print 'natoms, nsteps', natoms, nsteps
+    ### read in the first two steps and create an image
+    for i in range(2):
+        xi,yi,lx,ly,tstep,natoms = read_char.read_snapshot(hfile, ifile)
+        print 'lx, ly, tstep, natoms',lx,ly,tstep,natoms
+        plt.plot(xi,yi,ls = '', marker = 'o', markeredgewidth = 0, markersize = 1)
+        plt.show()
+        plt.close()
+    
+    ### close the files
+    ifile.close()
+    hfile.close()
+    return
+
+##################################################################
+
+if __name__ == '__main__':
+    main()

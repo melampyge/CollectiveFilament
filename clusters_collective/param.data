@@ -1,0 +1,11 @@
+# parameter for the computation of the mean square displacement
+fname = out.char
+hname = out.header
+nfil = 75
+nskip = 500
+dcrit = 2.0
+lcrit = 0.5
+pcrit = 30
+dcrit2 = 3.0
+lcrit = 3.0
+pcrit = 30

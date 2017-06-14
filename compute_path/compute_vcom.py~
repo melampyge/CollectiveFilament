@@ -1,0 +1,75 @@
+#!/usr/local/bin/python2.7
+### read in the center of mass positions
+### use those to compute the instantaneous velocities
+### use those to compute velocity autocorrelation functions
+### use that to compute the MSD
+
+import numpy as np
+import sys, os, math
+import matplotlib.pyplot as plt
+
+try:
+    fname = sys.argv[1]
+    limit = int(sys.argv[2])
+except:
+    print 'Usage: ' + sys.argv[0] + '       filename      limit'
+    exit()
+
+
+
+############################################################################
+
+def read_data():
+    """ read in the positions of the COM"""
+    x = []
+    y = []
+    z = []
+    ifile = open(fname, 'r')
+    ifile.readline()
+    ifile.readline()
+    for line in ifile:
+        line = line.split()
+        x.append(float(line[1]))
+        y.append(float(line[2]))
+        z.append(float(line[3]))
+    ifile.close()
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+    return x,y,z
+
+
+
+############################################################################
+
+def main():
+    """ main function, called when the scrit is started"""
+    # read in the center of mass positions
+    print '  reading the data ...'
+    x,y,z = read_data()
+    n = len(x)
+    # compute the mean square displacement
+    hist = np.zeros(limit)
+    msd = np.zeros(limit)
+    # compute the MSD
+    print '  computing the MSD'
+    for i in range(0,n-limit):
+        if i%1000 == 0:
+            print i
+        xi = x[i]
+        yi = y[i]
+        zi = z[i]
+        for j in range(1,limit):
+            xj = x[i+j]
+            yj = y[i+j]
+            zj = z[i+j]
+            msd[j] += (xi-xj)**2 + (yi-yj)**2 + (zi-zj)**2
+    plt.loglog(msd)
+    plt.show()
+    plt.close()
+    return
+
+############################################################################
+
+if __name__ == '__main__':
+    main()

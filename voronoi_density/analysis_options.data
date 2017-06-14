@@ -1,0 +1,8 @@
+# information on options read by the analysis
+fname = out.char
+hname = out.header
+npol = 75
+nskip = 500
+nbins = 100
+vmin = 4.0
+vmax = 9.0

@@ -1,0 +1,5 @@
+# parameter for the computation of the mean square displacement
+fname = out.char
+hname = out.header
+npol = 75
+

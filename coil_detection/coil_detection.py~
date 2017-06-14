@@ -1,0 +1,178 @@
+#!/usr/local/bin/python2.7
+
+import numpy as np
+from scipy import linalg
+import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d as m3d
+import sys
+
+try:
+    fname = sys.argv[1]
+    nsteps = int(sys.argv[2])
+except:
+    print 'Usage: ' + sys.argv[0] + '      infilename       nsteps'
+    exit()
+    
+##################################################################
+
+def read_snapshot(ifile):
+    """ read in the coordinates from the xyz file"""
+    # get the number of atoms
+    line = ifile.readline()
+    line = line.split()
+    natoms = int(line[0])
+    # allocate array to store data
+    data = np.zeros((natoms,3))
+    # skip one line
+    ifile.readline()
+    # read in the coordinates
+    for i in range(natoms):
+        line = ifile.readline()
+        line = line.split()
+        data[i,0] = float(line[-3])
+        data[i,1] = float(line[-2])
+        data[i,2] = float(line[-1])
+    # return the data array
+    return data
+
+##################################################################
+
+def regression(data):
+    """ compute ODR regression in 3D"""
+    # compute the mean
+    mean = data.mean(axis=0)
+    data -= mean
+    # compute singular value decomposition
+    uu, dd, vv = linalg.svd(data)
+    return vv[0]
+
+##################################################################
+
+def rotate_to_x(vmax,data):
+    """ rotate the data onto the x-axis"""
+    # compute vector around which to rotate
+    n = np.cross(vmax,[1,0,0])
+    n /= np.sqrt(n[0]**2 + n[1]**2 + n[2]**2)
+    n1 = n[0]
+    n2 = n[1]
+    n3 = n[2]
+    # compute the angle around which to rotate
+    cos = vmax[0]
+    sin = np.sqrt(1-cos**2)
+    # compute the rotation matrix in 3D
+    R = np.zeros((3,3))
+    R[0,0] = n1**2*(1-cos) + cos
+    R[0,1] = n1*n2*(1-cos) - n3*sin
+    R[0,2] = n1*n3*(1-cos) + n2*sin
+    R[1,0] = n2*n1*(1-cos) + n3*sin
+    R[1,1] = n2**2*(1-cos) + cos
+    R[1,2] = n2*n3*(1-cos) - n1*sin
+    R[2,0] = n3*n1*(1-cos) - n2*sin
+    R[2,1] = n3*n2*(1-cos) + n1*sin
+    R[2,2] = n3**2*(1-cos) + cos
+    # rotate the vmax vector and check for errors
+    vmax = R.dot(vmax)
+    eps = 0.000001
+    if ((vmax[0]-1)**2 + vmax[1]**2 + vmax[2]**2 > eps):
+        print 'WARNING: vmax after rotation = ', vmax
+    # rotate the data matrix
+    data = R.dot(data.transpose())   
+    return data
+
+##################################################################
+
+def compute_fluc(data):
+    """ compute the x position and the fluctuations in real space"""
+    x = np.copy(data[0])
+    # use hx = y (unclear how to work with sign otherwise)
+    hx = np.copy(data[1])
+    #hx = np.sqrt(data[1]**2 + data[2]**2)
+    return x, hx
+
+##################################################################
+
+def cft(x,hx,k):
+    """ compute power spectrum in Fourier space"""
+    hk = np.zeros((len(k)), dtype = np.complex128)
+    img = 1.0j
+    # compute the Fourier transform of hx
+    for i in range(len(k)):
+        for j in range(len(x)):
+            if j == 0:
+                hk[i] += hx[j]*np.exp(-img*k[i]*x[j])*0.5*(x[j+1] - x[j])
+            elif j == len(x)-1:
+                hk[i] += hx[j]*np.exp(-img*k[i]*x[j])*0.5*(x[j] - x[j-1])
+            else:
+                hk[i] += hx[j]*np.exp(-img*k[i]*x[j])*0.5*(x[j+1] - x[j-1])
+    hk /= np.sqrt(2*np.pi)
+    return hk
+
+##################################################################
+
+def compute_spectrum(hk):
+    """ compute the power spectrum"""
+    pwr = np.zeros((len(hk)))
+    pwr2 = np.zeros((len(hk)))
+    for i in range(len(hk)):
+        pwr[i] = hk[i].real**2 + hk[i].imag**2
+        pwr2[i] = hk[i].real**2 - hk[i].imag**2
+    return pwr, pwr2
+
+##################################################################
+
+def run_analysis():
+    """ compute the power spectrum"""
+    # allocate a k vector and pwr vector
+    nf = 50
+    kmax = 5.0
+    k = np.linspace(0.0,kmax,nf)
+    k /= 2*np.pi
+    hk = np.zeros((nf), dtype = np.complex128)
+    # open the file for reading
+    ifile = open(fname)
+    # loop over all snapshots
+    for i in range(nsteps):
+        print i
+        # read data of a single snapshot
+        data = read_snapshot(ifile)
+        # perform the linear regression
+        vmax = regression(data)
+        # transform the data such that they lie on the x-axis
+        data = rotate_to_x(vmax, data)
+        # compute x and h(x) values
+        x,hx = compute_fluc(data)
+        # fourier transformt the data and compute spectrum
+        hki = cft(x,hx,k)
+        # compute the average
+        hk += hki/(i+1)
+        # compute the true power spectrum from the complex number
+        pwr, pwr2 = compute_spectrum(hk)
+    plt.plot(k,pwr)
+    plt.plot(k,pwr2)
+    plt.show()
+    plt.close()
+    # close the file
+    ifile.close()
+    return k, pwr
+
+##################################################################
+
+def write_results(k,pwr):
+    """ write power spectrum to file"""
+
+    return
+
+##################################################################
+
+def main():
+    """ main function, called when script is started"""
+    # compute the power spectrum
+    k, pwr = run_analysis()
+    # write results to file
+    write_results(k,pwr)
+    return
+
+##################################################################
+
+if __name__ == '__main__':
+    main()

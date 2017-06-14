@@ -1,0 +1,6 @@
+# information on options read by the analysis
+fname = out.char
+hname = out.header
+nfil = 75
+nskip = 500
+nbins = 30

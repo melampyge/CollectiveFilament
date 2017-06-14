@@ -1,0 +1,10 @@
+nsnapshots, natoms = 251 240000
+ITEM: TIMESTEP
+0
+ITEM: NUMBER OF ATOMS
+240000
+ITEM: BOX BOUNDS pp pp pp
+0 600
+0 600
+-5 5
+ITEM: ATOMS id type xs ys zs

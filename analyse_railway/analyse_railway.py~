@@ -1,0 +1,103 @@
+#!/usr/local/bin/python2.7
+
+import thread
+import time
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+# define variabl space and create job list
+atom1 = 25
+datom = [1,2,5,10,15, 20, 25, 35, 50]
+
+#####################################################################
+
+def read_t_msd():
+    """ read in the msd of a railway file"""
+    msd = []
+    t = []
+    ifile = open('../../Pe_0.0/OUTPUT/railway_' + str(atom1) + '_' + str(atom1) + '_short.data')
+    line = ifile.readline()
+    for line in ifile:
+	line = line.split()
+	t.append(float(line[0]))
+	msd.append(float(line[1]))
+    ifile.close()
+    t = np.array(t)
+    msd = np.array(msd)
+    return t,msd
+
+#####################################################################
+
+def read_msd(j):
+    """ read in the msd of a railway file"""
+    msd = []
+    ifile = open('railway_' + str(atom1) + '_' + str(j) + '_short.data')
+    line = ifile.readline()
+    for line in ifile:
+	line = line.split()
+	msd.append(float(line[1]))
+    ifile.close()
+    msd = np.array(msd)
+    return msd
+
+
+#####################################################################
+
+def run_analysis():
+    """ analyse the railway results"""
+    for i in range(1,nf):
+        for j in range(nk):
+            # read in the MSD of the reference data
+            t,msd_ref = read_t_msd(fp[0],kappa[j],atom1,atom1)
+            # read in the MSD of remaining data
+            msd_prop = []
+            for k in datom:
+	        msd_prop.append(read_msd(fp[i],kappa[j],atom1,atom1+k))
+            # create a log/log plot of the data
+	    fig = plt.figure()
+	    ax = plt.subplot(111)
+	    # add a dummy item 
+            plt.loglog(t,msd_ref, color = 'w', label = r'$\kappa$ = ' + str(kappa[j]))
+	    plt.loglog(t,msd_ref, label = 'fp = ' + str(fp[0]) + ', i = 0')
+	    for k in range(1,len(datom)):
+	        plt.loglog(t,msd_prop[k], label = 'fp = ' + str(fp[i]) + ', i = ' + str(datom[k]))
+            plt.legend(loc = 'lower right', ncol = 2)
+	    # add axis labels
+	    ax.set_xlabel(r'$t$ [0.0001$\tau$]')
+	    ax.set_ylabel(r'$<(r_{30+i}(t) - r_{30}(0))^2>$ [$\sigma^2$]')
+	    ax.set_ylim([1.e-5, 1.e4])
+	    plt.savefig('railway_results/fp_' + str(fp[i]) + '_kappa_' + str(kappa[j]) + '.png')
+	    plt.show()
+	    plt.close()
+
+#####################################################################
+
+def main():
+    """ main function"""
+    # read in the MSD of the reference data
+    t, msd_ref = read_t_msd()
+    # read in the MSD of the remaining data
+    msd_prop = []
+    for i in datom:
+        msd_prop.append(read_msd(i + atom1))
+
+    # generate a plot
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    # add the reference data
+    ax.plot(t, msd_ref)
+    # add the other data
+    for i in range(len(datom)):
+        ax.plot(t,msd_prop[i], ls = '', marker = 'o')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plt.show()
+    plt.close()
+    return
+
+#####################################################################
+
+if __name__ == '__main__':
+    main()
