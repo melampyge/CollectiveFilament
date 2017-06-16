@@ -26,8 +26,8 @@ def get_args():
     parser.add_argument("-fl", "--folder", nargs="?", \
                         const='/local/duman/SIMULATIONS/many_polymers_5/density_0.2/', \
                         help="Folder containing data, as in /local/duman/SIMULATIONS/many_polymers_5/density_0.2/") 
-    parser.add_argument("-af", "--analysisfile", nargs="?", const="RE2E", \
-                        help="Address of the analysis file as in RE2E")     
+    parser.add_argument("-af", "--analysisfile", nargs="?", const="RE2E/e2e.data", \
+                        help="Address of the analysis file as in RE2E/e2e.data")     
     parser.add_argument("-sb", "--savebase", nargs="?", \
                         const = "/usr/users/iff_th2/duman/RolfData/PLOTS/", \
                         help="Folder to save the data, as in /usr/users/iff_th2/duman/RolfData/PLOTS/") 
@@ -92,7 +92,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         y = yp[key]
         length = sim.length
         
-        label = '$\\xi_{p}/L=$' + str(key)
+        label = 'r$\\xi_{p}/L=$' + str(key)
         line0 = ax0.loglog(x, y/sim.length**2, \
                          linewidth=2.0, label=label)
     
@@ -103,8 +103,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     
     ### labels
 
-    ax0.set_xlabel("$Pe$", fontsize=40)
-    ax0.set_ylabel("$\langle \xi_r^2\rangle/L^2$", fontsize=40)
+    ax0.set_xlabel("r$Pe$", fontsize=40)
+    ax0.set_ylabel("$r\langle \xi_r^2\rangle/L^2$", fontsize=40)
 
     ### limits
 
