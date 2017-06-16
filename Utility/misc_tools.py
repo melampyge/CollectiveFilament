@@ -99,15 +99,15 @@ def collect_data(basefolder, analysisfilepath, read_fnc, param_choice):
             sims[key] = read_write.read_sim_info(datafile)
             data[key] = read_fnc(analysisfile)
             
-    print "data = " + data
+    print "data = ", data
     
     if param_choice == 'kappa':
         xp, yp = accumulate_data(kappa, fp, 'kappa', data, sims)
     elif param_choice == 'fp':
         xp, yp = accumulate_data(fp, kappa, 'fp', data, sims)
     
-    print "xp = " + xp
-    print "yp = " + yp
+    print "xp = ", xp
+    print "yp = ", yp
         
     return xp, yp, sims
 
