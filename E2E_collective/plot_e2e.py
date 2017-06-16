@@ -95,12 +95,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]
-        print y.shape
-        print ystd.shape
-        print y
-        print yval
-        print ystd
+        ystd = y[1]/100.
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
