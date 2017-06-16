@@ -102,7 +102,7 @@ def collect_data(basefolder, analysisfilepath, read_fnc, param_choice):
     if param_choice == 'kappa':
         xp, yp = accumulate_data(kappa, fp, 'kappa', data, sims)
     elif param_choice == 'fp':
-        xp, yp = accumulate_data(kappa, fp, 'kappa', data, sims)
+        xp, yp = accumulate_data(fp, kappa, 'fp', data, sims)
         
     return xp, yp, sims
 
