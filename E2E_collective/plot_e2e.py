@@ -98,7 +98,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
-        line0 = ax0.errorbar(x, y/length**2, yerr=ystd, 'o', \
+        line0 = ax0.errorbar(x, y/length**2, yerr=ystd, fmt='o', \
                          linewidth=2.0, label=label)
     
     ax0.set_xscale('log')
