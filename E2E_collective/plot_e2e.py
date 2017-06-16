@@ -96,7 +96,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         y = np.array(yp[key])
         length = sim.length
         
-        label = 'r$\eta_{p}/L=$' + str(key)
+        label = 'r$\\eta_{p}/L=$' + str(key)
         line0 = ax0.loglog(x, y/length**2, \
                          linewidth=2.0, label=label)
     
@@ -108,7 +108,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel("r$Pe$", fontsize=40)
-    ax0.set_ylabel("$r\langle \eta_r^2\rangle/L^2$", fontsize=40)
+    ax0.set_ylabel("$r\\langle \\eta_{r}^{2}\\rangle/L^{2}$", fontsize=40)
 
     ### limits
 
