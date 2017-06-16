@@ -90,12 +90,15 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     os.system("mkdir -p " + base)  
     savepath = base + '/' + savefolder + '_' + param_choice + '.pdf'
     
-    for key in xp.keys():
+    keys = xp.keys()
+    print keys
+    keys = np.sort(keys)
+    for key in keys:
         
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]/100.
+        ystd = y[1]/500.
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
