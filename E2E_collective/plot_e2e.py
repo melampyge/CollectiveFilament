@@ -93,7 +93,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     for key in xp.keys():
         
         x = np.array(xp[key])
-        y = np.array(yp[key][0])
+        y = np.array(yp[key])
         ystd = np.array(yp[key][1])
         print y.shape
         print ystd.shape
