@@ -92,12 +92,12 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     
     for key in xp.keys():
         
-        x = xp[key]
-        y = yp[key]
+        x = np.array(xp[key])
+        y = np.array(yp[key])
         length = sim.length
         
         label = 'r$\eta_{p}/L=$' + str(key)
-        line0 = ax0.loglog(x, y/sim.length**2, \
+        line0 = ax0.loglog(x, y/length**2, \
                          linewidth=2.0, label=label)
     
     ### title
