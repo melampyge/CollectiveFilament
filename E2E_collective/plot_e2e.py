@@ -93,14 +93,15 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     for key in xp.keys():
         
         x = np.array(xp[key])
-        y = np.array(yp[key])
-        ystd = np.array(yp[key][1])
+        y = np.transpose(np.array(yp[key]))
+        yval = y[0]
+        ystd = y[1]
         print y.shape
         print ystd.shape
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
-        line0 = ax0.errorbar(x, y/length**2, yerr=ystd, fmt='o', \
+        line0 = ax0.errorbar(x, yval/length**2, yerr=ystd, fmt='o', \
                          linewidth=2.0, label=label)
     
     ax0.set_xscale('log')
