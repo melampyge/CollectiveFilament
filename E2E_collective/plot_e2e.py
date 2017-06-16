@@ -42,20 +42,24 @@ def get_args():
 def read_e2e_data(path):
     """ read specific analysis data"""
     
-    fl = open(path, 'r')
-    
-    fl.readline()               # comment line
-    fl.readline()               # empty line
-    
-    line = fl.readline()
-    ll = line.split()
-    e2e = float(ll[-1])
-    
-    line = fl.readline()
-    ll = line.split()
-    std = float(ll[-1])
-    
-    fl.close()
+    if os.path.exists(path):
+        fl = open(path, 'r')
+        
+        fl.readline()               # comment line
+        fl.readline()               # empty line
+        
+        line = fl.readline()
+        ll = line.split()
+        e2e = float(ll[-1])
+        
+        line = fl.readline()
+        ll = line.split()
+        std = float(ll[-1])
+        
+        fl.close()
+    else:
+        e2e = 0.
+        std = 0.
     
     return e2e, std
 
