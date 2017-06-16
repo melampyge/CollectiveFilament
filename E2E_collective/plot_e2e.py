@@ -98,6 +98,9 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         ystd = y[1]
         print y.shape
         print ystd.shape
+        print y
+        print yval
+        print ystd
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
