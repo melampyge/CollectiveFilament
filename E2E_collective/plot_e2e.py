@@ -58,7 +58,7 @@ def read_e2e_data(path):
         
         fl.close()
     else:
-        e2e = 0.
+        e2e = 0.1
         std = 0.
     
     return e2e, std
@@ -107,7 +107,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]/50.
+        ystd = y[1]
         yth = np.sqrt(e2e_theoretical(key))*np.ones_like(x)
         length = sim.length
         
@@ -118,7 +118,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
                          linewidth=2.0, label='_nolegend_', color=colors[j])        
     
     ax0.set_xscale('log')
-    #ax0.set_yscale('log')
+    ax0.set_yscale('log')
     
     ### title
     
