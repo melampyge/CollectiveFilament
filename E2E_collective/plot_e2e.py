@@ -98,9 +98,12 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     os.system("mkdir -p " + base)  
     savepath = base + '/' + savefolder + '_' + param_choice + '.pdf'
     
+    npe = 7
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+    
     keys = xp.keys()
     keys = np.sort(keys)
-    for key in keys:
+    for j, key in enumerate(keys):
         
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
@@ -111,12 +114,12 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         
         label = r'$\xi_{p}/L=$' + str(key)
         line0 = ax0.errorbar(x, yval/length, yerr=ystd, fmt='o', \
-                         linewidth=2.0, label=label)
+                         linewidth=2.0, label=label, color=colors[j%npe])
         line1 = ax0.plot(x, yth, \
-                         linewidth=2.0, label='_nolegend_')        
+                         linewidth=2.0, label='_nolegend_', color=colors[j%npe])        
     
     ax0.set_xscale('log')
-    ax0.set_yscale('log')
+    #ax0.set_yscale('log')
     
     ### title
     
@@ -125,8 +128,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     
     ### labels
 
-    ax0.set_xlabel(r"$Pe$", fontsize=40)
-    ax0.set_ylabel(r"$\\sqrt{\langle r_{e}^{2}\rangle}/L", fontsize=40)
+    ax0.set_xlabel(r'$Pe$', fontsize=40)
+    ax0.set_ylabel(r'$\sqrt{\langle r_{e}^{2}\rangle}/L', fontsize=40)
 
     ### limits
 
