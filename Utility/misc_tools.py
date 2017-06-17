@@ -4,6 +4,7 @@
 ##############################################################################
 
 import read_write
+import numpy as np
 
 ##############################################################################
 
@@ -83,7 +84,7 @@ def gen_folders(base, fl, d, k, f):
 ##############################################################################
 
 def collect_data(basefolder, analysisfilepath, read_fnc, param_choice):
-    """ collect the analysis data as a function of parameters"""
+    """ collect the analysis data -SINGULAR- as a function of both of the parameters"""
     
     density = 0.2
     kappa = [1.25, 2.5, 5.0, 25.0, 62.5, 125.0, 200.0, 300.0, 400.0]
@@ -109,8 +110,51 @@ def collect_data(basefolder, analysisfilepath, read_fnc, param_choice):
 
 ##############################################################################
 
+def collect_multiple_data(basefolder, analysisfilepath, read_fnc, fix_choice, fix_value):
+    """ collect the analysis data -MULTIPLE- as a function of both of the parameters"""
+    
+    density = 0.2
+    kappa = [1.25, 2.5, 5.0, 25.0, 62.5, 125.0, 200.0, 300.0, 400.0]
+    fp = [0.0, 0.0048, 0.0112, 0.024, 0.08, 0.24, 0.8, 1.2, 2.4, 7.0]
+    
+    ### param is the value to plot as a function of
+    
+    if fix_choice == 'kappa':
+        param = fp
+    elif fix_choice == 'fp':
+        param = kappa
+    
+    xp = {}
+    yp = {}
+    ystdp = {}
+    sims = {}
+    for p in param:
+        if fix_choice == 'kappa':
+            datafile, analysisfile = gen_folders(basefolder, analysisfilepath, 
+                                                 density, fix_value, p)   
+            key = sims
+        elif fix_choice == 'fp':
+            datafile, analysisfile = gen_folders(basefolder, analysisfilepath, 
+                                                 density, p, fix_value)            
+        sim = read_write.read_sim_info(datafile)
+        if fix_choice == 'kappa':
+            key = sim.pe
+        elif fix_choice == 'fp':
+            key = sim.xil
+        sims[key] = sim
+        data = read_fnc(analysisfile)
+        xp[key] = data[0]
+        yp[key] = data[1]
+        ystdp[key] = data[2]
+        
+        data[p] = read_fnc(analysisfile)
+                  
+    return xp, yp, ystdp, sims
+
+##############################################################################
+
 def accumulate_data(param, other_param, param_choice, data, sims):
-    """ acccumulate data as a function of the chosen parameter"""
+    """ acccumulate data -SINGULAR- as a function of the chosen parameter"""
     
     xp = {}
     yp = {}

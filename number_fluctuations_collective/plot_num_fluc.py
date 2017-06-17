@@ -1,5 +1,7 @@
 
-""" Plot average end-to-end vector of filaments"""
+""" Plot number fluctuations of filaments,
+    by fixing persistence length,
+    and changing Pe"""
 
 ### example command line arguments: 
 
@@ -16,6 +18,7 @@ mpl.use('Agg', warn=False)
 import matplotlib.pyplot as plt
 import misc_tools
 import read_write
+import pandas as pd
 
 ##############################################################################
 
@@ -24,44 +27,35 @@ def get_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-fl", "--folder", nargs="?", \
-                        const='/local/duman/SIMULATIONS/many_polymers_5/', \
-                        help="Folder containing data, as in /local/duman/SIMULATIONS/many_polymers_5/") 
-    parser.add_argument("-af", "--analysisfile", nargs="?", const="RE2E/e2e.data", \
-                        help="Address of the analysis file as in RE2E/e2e.data")     
+                        const='/local/duman/SIMULATIONS/many_polymers_5/density_0.2/', \
+                        help="Folder containing data, as in /local/duman/SIMULATIONS/many_polymers_5/density_0.2/") 
+    parser.add_argument("-af", "--analysisfile", nargs="?", const="NUMBER_FLUC/number_fluc.data", \
+                        help="Address of the analysis file as in NUMBER_FLUC/number_fluc.data")     
     parser.add_argument("-sb", "--savebase", nargs="?", \
                         const = "/usr/users/iff_th2/duman/RolfData/PLOTS/", \
                         help="Folder to save the data, as in /usr/users/iff_th2/duman/RolfData/PLOTS/") 
-    parser.add_argument("-sf", "--savefolder", nargs="?", const="E2E", \
-                        help="Specific folder for saving, as in E2E")      
+    parser.add_argument("-sf", "--savefolder", nargs="?", const="NUMBER_FLUC", \
+                        help="Specific folder for saving, as in NUMBER_FLUC")      
     args = parser.parse_args()
     
     return args
 
 ##############################################################################
 
-def read_e2e_data(path):
+def read_number_fluc_data(path):
     """ read specific analysis data"""
     
     if os.path.exists(path):
-        fl = open(path, 'r')
-        
-        fl.readline()               # comment line
-        fl.readline()               # empty line
-        
-        line = fl.readline()
-        ll = line.split()
-        e2e = float(ll[-1])
-        
-        line = fl.readline()
-        ll = line.split()
-        std = float(ll[-1])
-        
-        fl.close()
+        order_data = pd.read_csv(path, sep='\t', skiprows=1, header=0) 
+        x = order_data['n']
+        y = order_data['delta_n']
+        ystd = order_data['std']
     else:
-        e2e = 0.
-        std = 0.
+        x = 0.
+        y = 0.
+        ystd = 0.
     
-    return e2e, std
+    return x, y, ystd
 
 ##############################################################################
 
@@ -73,7 +67,7 @@ def e2e_theoretical(xil):
 
 ##############################################################################
 
-def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
+def plot_data(xp, yp, ystdp, sims, savebase, savefolder, param_choice):
     """ plot the data,
     NOTE THAT xp and yp are dictionaries with keys as chosen parameter,
     and values as the x and y axis of the plot"""
@@ -105,17 +99,14 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     for j, key in enumerate(keys):
         
         x = np.array(xp[key])
-        y = np.transpose(np.array(yp[key]))
-        yval = y[0]
-        ystd = y[1]/10.
-        yth = np.sqrt(e2e_theoretical(key))*np.ones_like(x)
-        length = sim.length
-        
-        label = r'$\xi_{p}/L=$' + str(key)
-        line0 = ax0.errorbar(x, yval/length, yerr=ystd, fmt='o', \
+        y = np.array(yp[key])
+        ystd = np.array(ystdp[key])
+    
+        label = r'$\Pe=$' + str(key)
+        line0 = ax0.errorbar(x, y, yerr=ystd, fmt='o', \
                          linewidth=2.0, label=label, color=colors[j])
-        line1 = ax0.plot(x, yth, \
-                         linewidth=2.0, label='_nolegend_', color=colors[j])        
+#        line1 = ax0.plot(x, yth, \
+#                         linewidth=2.0, label='_nolegend_', color=colors[j])        
     
     ax0.set_xscale('log')
     ax0.set_yscale('log')
@@ -127,13 +118,13 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     
     ### labels
 
-    ax0.set_xlabel(r'$Pe$', fontsize=40)
-    ax0.set_ylabel(r'$\sqrt{ \langle r_{e}^{2} \rangle }/L$', fontsize=40)
+    ax0.set_xlabel(r'$N$', fontsize=40)
+    ax0.set_ylabel(r'$\Delta N$', fontsize=40)
 
     ### limits
 
     #ax0.set_xlim((0.4, 1.05))
-    ax0.set_ylim((0.4, 1.05))
+    #ax0.set_ylim((0.4, 1.05))
     
     ### ticks
     
@@ -158,10 +149,13 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
 def main():
     
     args = get_args()
-    param_choice = 'kappa'          # plot with kappa as the legend
-    x, y, sims = misc_tools.collect_data(args.folder, args.analysisfile, 
-                                         read_e2e_data, param_choice)
-    plot_data(x, y, sims, args.savebase, args.savefolder, param_choice)
+    fix_choice = 'kappa'          # plot with kappa as the legend
+    param_choice = 'fp'
+    fix_value = 200.0
+    x, y, ystd, sims = misc_tools.collect_multiple_data(args.folder, args.analysisfile, 
+                                                  read_number_fluc_data, 
+                                                  fix_choice, fix_value)
+    plot_data(x, y, ystd, sims, args.savebase, args.savefolder, param_choice)
 
     return
 
