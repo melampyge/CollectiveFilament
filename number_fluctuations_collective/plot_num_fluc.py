@@ -103,7 +103,7 @@ def plot_data(xp, yp, ystdp, sims, savebase, savefolder, param_choice):
         ystd = np.array(ystdp[key])
     
         label = r'$Pe=$' + str(key)
-        line0 = ax0.errorbar(x, y, yerr=ystd, fmt='o', \
+        line0 = ax0.errorbar(x, y/np.sqrt(x), yerr=ystd, \
                          linewidth=2.0, label=label, color=colors[j])
 #        line1 = ax0.plot(x, yth, \
 #                         linewidth=2.0, label='_nolegend_', color=colors[j])        
