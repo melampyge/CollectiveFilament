@@ -126,7 +126,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r"$Pe$", fontsize=40)
-    ax0.set_ylabel(r"$\sqrt{\langle r_{e}^{2}\rangle}/L fontsize=40)
+    ax0.set_ylabel(r"$\sqrt{\langle r_{e}^{2}\rangle}/L", fontsize=40)
 
     ### limits
 
