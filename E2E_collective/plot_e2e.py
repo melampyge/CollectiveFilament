@@ -58,7 +58,7 @@ def read_e2e_data(path):
         
         fl.close()
     else:
-        e2e = 0.1
+        e2e = 0.
         std = 0.
     
     return e2e, std
