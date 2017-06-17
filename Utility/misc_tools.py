@@ -146,9 +146,7 @@ def collect_multiple_data(basefolder, analysisfilepath, read_fnc, fix_choice, fi
         xp[key] = data[0]
         yp[key] = data[1]
         ystdp[key] = data[2]
-        
-        data[p] = read_fnc(analysisfile)
-                  
+                          
     return xp, yp, ystdp, sims
 
 ##############################################################################
