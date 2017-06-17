@@ -69,7 +69,7 @@ def e2e_theoretical(xil):
     """ yield the analytical expression for the end-to-end vector,
     with Kraktky-Porod model"""
     
-    return 2.*xil - 2*(xil)**2*(1-np.exp(-1/xil))
+    return 2.*xil - 2.*(xil)**(2)*(1-np.exp(-1/xil))
 
 ##############################################################################
 
@@ -105,8 +105,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]/200.
-        yth = e2e_theoretical(key)*np.ones_like(x)
+        ystd = y[1]/100.
+        yth = np.sqrt(e2e_theoretical(key))*np.ones_like(x)
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
@@ -126,7 +126,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r"$Pe$", fontsize=40)
-    ax0.set_ylabel(r"$\langle r_{e}^{2}\rangle/L^{2}$", fontsize=40)
+    ax0.set_ylabel(r"$\sqrt{\langle r_{e}^{2}\rangle}/L fontsize=40)
 
     ### limits
 
