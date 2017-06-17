@@ -110,7 +110,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
-        line0 = ax0.errorbar(x, yval/length**2, yerr=ystd, fmt='o', \
+        line0 = ax0.errorbar(x, yval/length, yerr=ystd, fmt='o', \
                          linewidth=2.0, label=label)
         line1 = ax0.plot(x, yth, \
                          linewidth=2.0, label='_nolegend_')        
@@ -126,7 +126,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r"$Pe$", fontsize=40)
-    ax0.set_ylabel(r"$\sqrt{\langle r_{e}^{2}\rangle}/L", fontsize=40)
+    ax0.set_ylabel(r"$\\sqrt{\langle r_{e}^{2}\rangle}/L", fontsize=40)
 
     ### limits
 
