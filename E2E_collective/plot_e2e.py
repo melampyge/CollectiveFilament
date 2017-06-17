@@ -91,7 +91,6 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     fig = plt.figure()
     subp = misc_tools.Subplots(fig, ax_len, ax_sep, ax_b, total_subplots_in_x) 
     ax0 = subp.addSubplot()
-    plt.rc('text', usetex=True)
     
     ### save properties
     
@@ -129,7 +128,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r'$Pe$', fontsize=40)
-    ax0.set_ylabel(r'$\sqrt{\langle r_{e}^{2}\rangle}/L', fontsize=40)
+    ax0.set_ylabel(r'$\sqrt{ \langle r_{e}^{2} \rangle }/L', fontsize=40)
 
     ### limits
 
