@@ -107,7 +107,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]
+        ystd = y[1]/100.
         yth = np.sqrt(e2e_theoretical(key))*np.ones_like(x)
         length = sim.length
         
@@ -132,8 +132,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
 
     ### limits
 
-    #ax0.set_xlim((-1, 15))
-    #ax0.set_ylim((downlim, uplim))
+    #ax0.set_xlim((0.4, 1.05))
+    ax0.set_ylim((0.4, 1.05))
     
     ### ticks
     
