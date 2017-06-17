@@ -91,32 +91,32 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     fig = plt.figure()
     subp = misc_tools.Subplots(fig, ax_len, ax_sep, ax_b, total_subplots_in_x) 
     ax0 = subp.addSubplot()
- 
+    plt.rc('text', usetex=True)
+    
     ### save properties
     
     base = savebase + savefolder + '/'
     os.system("mkdir -p " + base)  
     savepath = base + '/' + savefolder + '_' + param_choice + '.pdf'
     
-    npe = 7
-    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
-    
     keys = xp.keys()
     keys = np.sort(keys)
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(keys)))   
+    
     for j, key in enumerate(keys):
         
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]/100.
+        ystd = y[1]/50.
         yth = np.sqrt(e2e_theoretical(key))*np.ones_like(x)
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
         line0 = ax0.errorbar(x, yval/length, yerr=ystd, fmt='o', \
-                         linewidth=2.0, label=label, color=colors[j%npe])
+                         linewidth=2.0, label=label, color=colors[j])
         line1 = ax0.plot(x, yth, \
-                         linewidth=2.0, label='_nolegend_', color=colors[j%npe])        
+                         linewidth=2.0, label='_nolegend_', color=colors[j])        
     
     ax0.set_xscale('log')
     #ax0.set_yscale('log')
