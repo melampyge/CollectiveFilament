@@ -102,7 +102,7 @@ def plot_data(xp, yp, ystdp, sims, savebase, savefolder, param_choice):
         y = np.array(yp[key])
         ystd = np.array(ystdp[key])
     
-        label = r'$\Pe=$' + str(key)
+        label = r'$Pe=$' + str(key)
         line0 = ax0.errorbar(x, y, yerr=ystd, fmt='o', \
                          linewidth=2.0, label=label, color=colors[j])
 #        line1 = ax0.plot(x, yth, \
