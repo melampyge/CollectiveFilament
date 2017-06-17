@@ -100,7 +100,7 @@ def plot_data(xp, yp, ystdp, sims, savebase, savefolder, param_choice):
         
         x = np.array(xp[key])
         y = np.array(yp[key])
-        ystd = np.array(ystdp[key])
+        ystd = np.array(ystdp[key])/10.
     
         label = r'$Pe=$' + str(key)
         line0 = ax0.errorbar(x, y/np.sqrt(x), yerr=ystd, \
@@ -119,7 +119,7 @@ def plot_data(xp, yp, ystdp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r'$N$', fontsize=40)
-    ax0.set_ylabel(r'$\Delta N$', fontsize=40)
+    ax0.set_ylabel(r'$\Delta N/\sqrt{N}$', fontsize=40)
 
     ### limits
 
