@@ -65,6 +65,14 @@ def read_e2e_data(path):
 
 ##############################################################################
 
+def e2e_theoretical(xil):
+    """ yield the analytical expression for the end-to-end vector,
+    with Kraktky-Porod model"""
+    
+    return 2.*xil - 2*(xil)**2*(1-np.exp(-1/xil))
+
+##############################################################################
+
 def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     """ plot the data,
     NOTE THAT xp and yp are dictionaries with keys as chosen parameter,
@@ -91,19 +99,21 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     savepath = base + '/' + savefolder + '_' + param_choice + '.pdf'
     
     keys = xp.keys()
-    print keys
     keys = np.sort(keys)
     for key in keys:
         
         x = np.array(xp[key])
         y = np.transpose(np.array(yp[key]))
         yval = y[0]
-        ystd = y[1]/500.
+        ystd = y[1]/200.
+        yth = e2e_theoretical(key)*np.ones_like(x)
         length = sim.length
         
         label = r'$\xi_{p}/L=$' + str(key)
         line0 = ax0.errorbar(x, yval/length**2, yerr=ystd, fmt='o', \
                          linewidth=2.0, label=label)
+        line1 = ax0.plot(x, yth, \
+                         linewidth=2.0, label='_nolegend_')        
     
     ax0.set_xscale('log')
     ax0.set_yscale('log')
