@@ -1,7 +1,7 @@
 
-""" Plot mean square displacement of the center of mass of filaments,
-    by fixing Pe,
-    and changing persistence length"""
+""" Plot shape parameter with respect to time,
+    by fixing persistence length,
+    and changing Pe"""
 
 ### example command line arguments: 
 
@@ -29,39 +29,60 @@ def get_args():
     parser.add_argument("-fl", "--folder", nargs="?", \
                         const='/local/duman/SIMULATIONS/many_polymers_5/density_0.2/', \
                         help="Folder containing data, as in /local/duman/SIMULATIONS/many_polymers_5/density_0.2/") 
-    parser.add_argument("-af", "--analysisfile", nargs="?", const="NUMBER_FLUC/number_fluc.data", \
-                        help="Address of the analysis file as in NUMBER_FLUC/number_fluc.data")     
+    parser.add_argument("-af", "--analysisfile", nargs="?", const="RGYR/rgyr.data", \
+                        help="Address of the analysis file as in RGYR/rgyr.data")     
     parser.add_argument("-sb", "--savebase", nargs="?", \
                         const = "/usr/users/iff_th2/duman/RolfData/PLOTS/", \
                         help="Folder to save the data, as in /usr/users/iff_th2/duman/RolfData/PLOTS/") 
-    parser.add_argument("-sf", "--savefolder", nargs="?", const="NUMBER_FLUC", \
-                        help="Specific folder for saving, as in NUMBER_FLUC")      
+    parser.add_argument("-sf", "--savefolder", nargs="?", const="RGYR", \
+                        help="Specific folder for saving, as in RGYR")      
     args = parser.parse_args()
     
     return args
 
 ##############################################################################
 
-def read_msd_data(path):
+def read_rgyr_data(path):
     """ read specific analysis data"""
     
     if os.path.exists(path):
-        data = pd.read_csv(path, sep='\t', skiprows=1, header=0)
-        x = data['Timestep']
-        y = data['MSD'] 
+        data = np.transpose(np.loadtxt(path, dtype=float))
+        time = data[0]
+        lamda_1 = data[1] 
+        lamda_12 = data[2]
+        lamda_2 = data[3]
+        eig_1 = data[4]
+        eig_2 = data[5]
     else:
-        x = 0.
-        y = 0.
+        time = lamda_1 = lamda_12 = lamda_2 = eig_1 = eig_2 = 0.
     
-    return x, y
+    return time, lamda_1, lamda_12, lamda_2, eig_1, eig_2
+    
+##############################################################################
+
+def unpack_data(data):
+    """ unpack multidimensional array data into scalars"""
+
+    return data[0], data[1], data[2], data[3], data[4]
 
 ##############################################################################
 
-def e2e_theoretical(xil):
-    """ yield the analytical expression for the end-to-end vector,
-    with Kraktky-Porod model"""
+def compute_shape(x, y):
+    """ compute the shape parameter"""
+            
+    return y/x
+
+##############################################################################
+
+def get_shape_param(data):
+    """ calculate the shape parameter"""
     
-    return 2.*xil - 2.*(xil)**(2)*(1-np.exp(-1/xil))
+    y = {}
+    for key in data.keys():
+        lamda_1, lamda_12, lamda_2, eig_1, eig_2 = unpack_data(data[key])
+        y[key] = compute_shape(eig_1, eig_2)
+        
+    return y
 
 ##############################################################################
 
@@ -99,11 +120,11 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         x = np.array(xp[key])
         y = np.array(yp[key])
     
-        label = r'$\xi_{p}/L=$' + str(key)
-        line0 = ax0.loglog(x/sim.tau_D, y/sim.length**2, \
+        label = r'$Pe=$' + str(key)
+        line0 = ax0.loglog(x/sim.tau_D, y, \
                          linewidth=2.0, label=label, color=colors[j])
-    ax0.loglog(x/sim.tau_D, x/sim.tau_D, '--', label='_nolegend_', linewidth=1.0, color='grey')
-    ax0.loglog(x/sim.tau_D, (x/sim.tau_D)**2, '--', label='_nolegend_', linewidth=1.0, color='grey')       
+#        line1 = ax0.plot(x, yth, \
+#                         linewidth=2.0, label='_nolegend_', color=colors[j])        
     
 #    ax0.set_xscale('log')
 #    ax0.set_yscale('log')
@@ -116,12 +137,12 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r'$t/\tau_{D}$', fontsize=40)
-    ax0.set_ylabel(r'$\Delta r^{2}/L^2$', fontsize=40)
+    ax0.set_ylabel(r'\lambda_{1}/\lambda_{2}$', fontsize=40)
 
     ### limits
 
-    ax0.set_xlim((5e0, 2e4))
-    ax0.set_ylim((1.5e0, 2e4))
+    #ax0.set_xlim((0.4, 1.05))
+    #ax0.set_ylim((0.4, 1.05))
     
     ### ticks
     
@@ -146,12 +167,13 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
 def main():
     
     args = get_args()
-    fix_choice = 'fp'          # plot with fp as the legend
-    param_choice = 'kappa'
-    fix_value = 7.0
-    x, y, sims = misc_tools.collect_multiple_data_2D(args.folder, args.analysisfile, 
-                                                  read_msd_data, 
+    fix_choice = 'kappa'          # plot with fp as the legend
+    param_choice = 'fp'
+    fix_value = 200.0
+    x, data, sims = misc_tools.collect_multiple_data_2D(args.folder, args.analysisfile, 
+                                                  read_rgyr_data, 
                                                   fix_choice, fix_value)
+    y = unpack_data(data)
     plot_data(x, y, sims, args.savebase, args.savefolder, param_choice)
 
     return
