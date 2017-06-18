@@ -64,7 +64,7 @@ def unpack_data(data):
     """ unpack multidimensional array data into scalars"""
 
     print data
-    print data.shape
+    print np.shape(data)
     return data[0], data[1], data[2], data[3], data[4], data[5]
 
 ##############################################################################
