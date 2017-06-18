@@ -63,8 +63,6 @@ def read_rgyr_data(path):
 def unpack_data(data):
     """ unpack multidimensional array data into scalars"""
 
-    print data
-    print np.shape(data)
     return data[0], data[1], data[2], data[3], data[4], data[5]
 
 ##############################################################################
@@ -141,7 +139,7 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     ### labels
 
     ax0.set_xlabel(r'$t/\tau_{D}$', fontsize=40)
-    ax0.set_ylabel(r'\lambda_{1}/\lambda_{2}$', fontsize=40)
+    ax0.set_ylabel(r'$\lambda_{1}/\lambda_{2}$', fontsize=40)
 
     ### limits
 
