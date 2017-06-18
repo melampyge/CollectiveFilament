@@ -111,7 +111,8 @@ def collect_data(basefolder, analysisfilepath, read_fnc, param_choice):
 ##############################################################################
 
 def collect_multiple_data(basefolder, analysisfilepath, read_fnc, fix_choice, fix_value):
-    """ collect the analysis data -MULTIPLE- as a function of both of the parameters"""
+    """ collect the analysis data -MULTIPLE- as a function of both of the parameters,
+    this will return 3D data"""
     
     density = 0.2
     kappa = [1.25, 2.5, 5.0, 25.0, 62.5, 125.0, 200.0, 300.0, 400.0]
@@ -148,8 +149,48 @@ def collect_multiple_data(basefolder, analysisfilepath, read_fnc, fix_choice, fi
         yp[key] = data[1]
         ystdp[key] = data[2]
     
-    return xp, yp, sims                      
-    #return xp, yp, ystdp, sims
+    return xp, yp, ystdp, sims
+
+##############################################################################
+
+def collect_multiple_data_2D(basefolder, analysisfilepath, read_fnc, fix_choice, fix_value):
+    """ collect the analysis data -MULTIPLE- as a function of both of the parameters,
+    this will return 2D data"""
+    
+    density = 0.2
+    kappa = [1.25, 2.5, 5.0, 25.0, 62.5, 125.0, 200.0, 300.0, 400.0]
+    fp = [0.0, 0.0048, 0.0112, 0.024, 0.08, 0.24, 0.8, 1.2, 2.4, 7.0]
+    #fp = [0.0, 0.0112, 0.024, 0.08, 1.2, 2.4, 7.0]
+    
+    ### param is the value to plot as a function of
+    
+    if fix_choice == 'kappa':
+        param = fp
+    elif fix_choice == 'fp':
+        param = kappa
+    
+    xp = {}
+    yp = {}
+    sims = {}
+    for p in param:
+        if fix_choice == 'kappa':
+            datafile, analysisfile = gen_folders(basefolder, analysisfilepath, 
+                                                 density, fix_value, p)   
+            key = sims
+        elif fix_choice == 'fp':
+            datafile, analysisfile = gen_folders(basefolder, analysisfilepath, 
+                                                 density, p, fix_value)            
+        sim = read_write.read_sim_info(datafile)
+        if fix_choice == 'kappa':
+            key = sim.pe
+        elif fix_choice == 'fp':
+            key = sim.xil
+        sims[key] = sim
+        data = read_fnc(analysisfile)
+        xp[key] = data[0]
+        yp[key] = data[1]
+    
+    return xp, yp, sims
 
 ##############################################################################
 
