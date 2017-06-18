@@ -120,8 +120,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
 
     ### limits
 
-    ax0.set_xlim((1.2e0, 1.2e4))
-    ax0.set_ylim((1.1e0, 1.2e4))
+    ax0.set_xlim((1.4e0, 1.5e4))
+    ax0.set_ylim((1.1e0, 1.5e4))
     
     ### ticks
     
