@@ -65,8 +65,7 @@ def unpack_data(data):
 
     print data
     print data.shape
-    data = np.transpose(data)
-    return data[0], data[1], data[2], data[3], data[4]
+    return data[0], data[1], data[2], data[3], data[4], data[5]
 
 ##############################################################################
 
@@ -80,9 +79,11 @@ def compute_shape(x, y):
 def get_shape_param(data):
     """ calculate the shape parameter"""
     
+    x = {}
     y = {}
     for key in data.keys():
-        lamda_1, lamda_12, lamda_2, eig_1, eig_2 = unpack_data(data[key])
+        t, lamda_1, lamda_12, lamda_2, eig_1, eig_2 = unpack_data(data[key])
+        x[key] = t
         y[key] = compute_shape(eig_1, eig_2)
         
     return y
@@ -124,8 +125,6 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         y = np.array(yp[key])
     
         label = r'$Pe=$' + str(key)
-        print x.shape
-        print y.shape
         line0 = ax0.loglog(x/sim.tau_D, y, \
                          linewidth=2.0, label=label, color=colors[j])
 #        line1 = ax0.plot(x, yth, \
@@ -175,10 +174,10 @@ def main():
     fix_choice = 'kappa'          # plot with fp as the legend
     param_choice = 'fp'
     fix_value = 200.0
-    x, data, sims = misc_tools.collect_multiple_data_2D(args.folder, args.analysisfile, 
-                                                  read_rgyr_data, 
-                                                  fix_choice, fix_value)
-    y = get_shape_param(data)
+    data, sims = misc_tools.collect_multiple_data_MultiD(args.folder, args.analysisfile, 
+                                                         read_rgyr_data, 
+                                                         fix_choice, fix_value)
+    x, y = get_shape_param(data)
     plot_data(x, y, sims, args.savebase, args.savefolder, param_choice)
 
     return
