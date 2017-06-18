@@ -148,7 +148,7 @@ def main():
     args = get_args()
     fix_choice = 'fp'          # plot with fp as the legend
     param_choice = 'kappa'
-    fix_value = 0.024
+    fix_value = 7.0
     x, y, sims = misc_tools.collect_multiple_data_2D(args.folder, args.analysisfile, 
                                                   read_msd_data, 
                                                   fix_choice, fix_value)
