@@ -70,7 +70,7 @@ def unpack_data(data):
 def compute_shape(x, y):
     """ compute the shape parameter"""
             
-    return y/x
+    return np.sqrt(y)/np.sqrt(x)
 
 ##############################################################################
 
