@@ -124,6 +124,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         y = np.array(yp[key])
     
         label = r'$Pe=$' + str(key)
+        print x.shape
+        print y.shape
         line0 = ax0.loglog(x/sim.tau_D, y, \
                          linewidth=2.0, label=label, color=colors[j])
 #        line1 = ax0.plot(x, yth, \
