@@ -86,7 +86,7 @@ def get_shape_param(data):
         x[key] = t
         y[key] = compute_shape(eig_1, eig_2)
         
-    return y
+    return x, y
 
 ##############################################################################
 
