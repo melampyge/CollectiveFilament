@@ -102,8 +102,8 @@ def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
         label = r'$\xi_{p}/L=$' + str(key)
         line0 = ax0.loglog(x/sim.tau_D, y/sim.length**2, \
                          linewidth=2.0, label=label, color=colors[j])
-#        line1 = ax0.plot(x, yth, \
-#                         linewidth=2.0, label='_nolegend_', color=colors[j])        
+    ax0.loglog(x/sim_tau_D, x/sim_tau_D, '--', label='_nolegend_', linewidth=1.0, color='grey')
+    ax0.loglog(x/sim_tau_D, (x/sim_tau_D)**2, '--', label='_nolegend_', linewidth=1.0, color='grey')       
     
 #    ax0.set_xscale('log')
 #    ax0.set_yscale('log')
