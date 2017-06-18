@@ -65,7 +65,7 @@ def e2e_theoretical(xil):
 
 ##############################################################################
 
-def plot_data(xp, yp, ystdp, sims, savebase, savefolder, param_choice):
+def plot_data(xp, yp, sims, savebase, savefolder, param_choice):
     """ plot the data,
     NOTE THAT xp and yp are dictionaries with keys as chosen parameter,
     and values as the x and y axis of the plot"""
