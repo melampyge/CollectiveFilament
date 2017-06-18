@@ -173,7 +173,7 @@ def main():
     x, data, sims = misc_tools.collect_multiple_data_2D(args.folder, args.analysisfile, 
                                                   read_rgyr_data, 
                                                   fix_choice, fix_value)
-    y = unpack_data(data)
+    y = get_shape_param(data)
     plot_data(x, y, sims, args.savebase, args.savefolder, param_choice)
 
     return
