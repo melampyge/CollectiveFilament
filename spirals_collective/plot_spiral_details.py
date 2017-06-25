@@ -141,8 +141,8 @@ def plot_data(folderbase, savebase):
     ## data access structure
     
     datapath = folderbase + 'density_0.2/kappa_5.0/fp_1.0/'
-    savepath1 = savebase + 'spiral_num_wrt_time_detail.png'
-    savepath2 = savebase + 'trajectory_detail.png'    
+    savepath1 = savebase + 'spiral_num_wrt_time_detail.pdf'
+    savepath2 = savebase + 'trajectory_detail.pdf'    
     textpath = '/SPIRAL/tagged_filament_info.hdf5'    
     fullpath = datapath + textpath
     
@@ -187,7 +187,7 @@ def plot_data(folderbase, savebase):
 
     ## save figure
 
-    plt.savefig(savepath1, dpi=200, bbox_inches='tight', pad_inches=0.08)
+    plt.savefig(savepath1, dpi=300, bbox_inches='tight', pad_inches=0.08)
     plt.clf()
     
     ## plot the data
@@ -222,7 +222,7 @@ def plot_data(folderbase, savebase):
 
     ## save figure
 
-    plt.savefig(savepath2, dpi=200, bbox_inches='tight', pad_inches=0.08)    
+    plt.savefig(savepath2, dpi=300, bbox_inches='tight', pad_inches=0.08)    
 
     return
 
